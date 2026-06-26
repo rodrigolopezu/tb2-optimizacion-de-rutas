@@ -13,7 +13,6 @@ class GrafoLogistico:
             reader = csv.DictReader(f)
             for row in reader:
                 osmid = int(row['osmid'])
-                # Guardamos latitud (y) y longitud (x) para validaciones espaciales futuras
                 self.nodos[osmid] = {
                     'lat': float(row['y']),
                     'lon': float(row['x'])
@@ -24,20 +23,28 @@ class GrafoLogistico:
 
     def cargar_aristas(self, ruta_csv):
         print("Construyendo aristas y calculando pesos...")
+        
         with open(ruta_csv, mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
+
             for row in reader:
                 u = int(row['u'])
                 v = int(row['v'])
-                
-                # El peso inicial será la distancia física (length)
-                # Según tu propuesta, luego podemos ponderarlo por límite de velocidad (maxspeed)
+
+                # Peso de la arista (distancia en metros)
                 peso = float(row['length'])
-                
-                # Respetamos el atributo 'oneway': Grafo dirigido u -> v
+
+                # Convierte el texto "True"/"False" del CSV a un booleano
+                oneway = row['oneway'].strip().lower() == 'true'
+
+                # Agrega la arista de u hacia v
                 if u in self.adyacencia:
                     self.adyacencia[u].append((v, peso))
-                    
+
+                # Si la vía es de doble sentido, agrega también la arista inversa
+                if not oneway and v in self.adyacencia:
+                    self.adyacencia[v].append((u, peso))
+
         print("Lista de adyacencia construida correctamente.")
 
 # Instancia global del grafo
@@ -46,13 +53,11 @@ grafo_urbano = GrafoLogistico()
 if __name__ == "__main__":
     import time
 
-    # Instanciamos temporalmente para la prueba
     grafo_prueba = GrafoLogistico()
     
     print("Iniciando prueba de carga de datos...")
     inicio = time.time()
     
-    # IMPORTANTE: La ruta asume que ejecutarás el script estando en la carpeta 'backend'
     grafo_prueba.cargar_nodos('data/nodos.csv')
     grafo_prueba.cargar_aristas('data/aristas.csv')
     
@@ -61,7 +66,6 @@ if __name__ == "__main__":
     print("-" * 30)
     print(f"Tiempo total de procesamiento: {fin - inicio:.4f} segundos")
     
-    # Extraer el ID del primer nodo para verificar que la data es correcta
     nodos_ids = list(grafo_prueba.nodos.keys())
     if nodos_ids:
         primer_nodo = nodos_ids[0]
