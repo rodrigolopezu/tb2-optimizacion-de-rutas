@@ -23,15 +23,15 @@ def aplicar_bounding_box(grafo, origen_id, destino_id, margen=0.01):
     adyacencia_filtrada = {}
     for nodo in nodos_filtrados:
         vecinos_validos = []
-        for vecino, peso in grafo.adyacencia.get(nodo, []):
+        for vecino, dist, tiempo in grafo.adyacencia.get(nodo, []):
             if vecino in nodos_filtrados:
-                vecinos_validos.append((vecino, peso))
+                vecinos_validos.append((vecino, dist, tiempo))
         adyacencia_filtrada[nodo] = vecinos_validos
 
     print(f"Bounding Box aplicado: de {len(grafo.nodos)} a {len(nodos_filtrados)} nodos.")
     return nodos_filtrados, adyacencia_filtrada
 
-def dijkstra(nodos_validos, adyacencia, origen_id, destino_id):
+def dijkstra(nodos_validos, adyacencia, origen_id, destino_id, modo='distancia'):
     # Cola de prioridad para procesar los nodos de menor costo primero
     # Formato: (costo_acumulado, nodo_actual)
     cola = [(0, origen_id)]
@@ -55,8 +55,9 @@ def dijkstra(nodos_validos, adyacencia, origen_id, destino_id):
             continue
 
         # Explorar vecinos
-        for vecino, peso in adyacencia.get(nodo_actual, []):
-            nuevo_costo = costo_actual + peso
+        for vecino, dist, tiempo in adyacencia.get(nodo_actual, []):
+            peso_arista = dist if modo == 'distancia' else tiempo
+            nuevo_costo = costo_actual + peso_arista
 
             if nuevo_costo < distancias[vecino]:
                 distancias[vecino] = nuevo_costo

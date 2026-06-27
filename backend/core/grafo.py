@@ -31,19 +31,24 @@ class GrafoLogistico:
                 u = int(row['u'])
                 v = int(row['v'])
 
-                # Peso de la arista (distancia en metros)
-                peso = float(row['length'])
+                distancia = float(row['length'])
 
-                # Convierte el texto "True"/"False" del CSV a un booleano
+                maxspeed_str = row.get('maxspeed','').strip()
+                if maxspeed_str.isdigit():
+                    velocidad_kmh = float(maxspeed_str)
+                else:
+                    velocidad_kmh = 40.0
+
+                velocidad_ms = velocidad_kmh / 3.6
+                tiempo = distancia / velocidad_ms
+
                 oneway = row['oneway'].strip().lower() == 'true'
 
-                # Agrega la arista de u hacia v
                 if u in self.adyacencia:
-                    self.adyacencia[u].append((v, peso))
+                    self.adyacencia[u].append((v, distancia, tiempo))
 
-                # Si la vía es de doble sentido, agrega también la arista inversa
                 if not oneway and v in self.adyacencia:
-                    self.adyacencia[v].append((u, peso))
+                    self.adyacencia[v].append((u, distancia, tiempo))
 
         print("Lista de adyacencia construida correctamente.")
 

@@ -33,32 +33,26 @@ def iniciar_servidor():
 
 @app.post("/api/ruta")
 def calcular_ruta(peticion: PeticionRuta):
-    # 1. Traducir coordenadas a nodos (osmids)
     origen_id = encontrar_nodo_mas_cercano(grafo_urbano, peticion.lat_origen, peticion.lon_origen)
     destino_id = encontrar_nodo_mas_cercano(grafo_urbano, peticion.lat_destino, peticion.lon_destino)
 
     if not origen_id or not destino_id:
-        raise HTTPException(status_code=400, detail="No se pudieron mapear las coordenadas a la red vial.")
+        raise HTTPException(status_code=400, detail="Error de mapeo.")
 
-    # 2. Acotar espacio de búsqueda con Bounding Box
     nodos_validos, adyacencia_filtrada = aplicar_bounding_box(grafo_urbano, origen_id, destino_id)
 
-    # 3. Calcular la ruta óptima
-    ruta_ids, costo_total = dijkstra(nodos_validos, adyacencia_filtrada, origen_id, destino_id)
+    # Ejecutamos Dijkstra para ambos modos
+    ruta_corta_ids, costo_corta = dijkstra(nodos_validos, adyacencia_filtrada, origen_id, destino_id, modo='distancia')
+    ruta_rapida_ids, costo_rapida = dijkstra(nodos_validos, adyacencia_filtrada, origen_id, destino_id, modo='tiempo')
 
-    if ruta_ids is None:
-        raise HTTPException(status_code=404, detail="No existe una ruta posible entre estos puntos.")
+    if ruta_corta_ids is None or ruta_rapida_ids is None:
+        raise HTTPException(status_code=404, detail="No hay ruta posible.")
 
-    # 4. Traducir los IDs de la ruta a lat/lon para dibujar la polilínea en el mapa
-    ruta_coordenadas = [
-        {"lat": grafo_urbano.nodos[nodo_id]['lat'], "lon": grafo_urbano.nodos[nodo_id]['lon']}
-        for nodo_id in ruta_ids
-    ]
+    # Mapeamos a coordenadas
+    coords_corta = [{"lat": grafo_urbano.nodos[n]['lat'], "lon": grafo_urbano.nodos[n]['lon']} for n in ruta_corta_ids]
+    coords_rapida = [{"lat": grafo_urbano.nodos[n]['lat'], "lon": grafo_urbano.nodos[n]['lon']} for n in ruta_rapida_ids]
 
     return {
-        "origen_mapeado": origen_id,
-        "destino_mapeado": destino_id,
-        "costo_total": costo_total,
-        "cantidad_nodos_ruta": len(ruta_ids),
-        "ruta": ruta_coordenadas
+        "ruta_corta": coords_corta,
+        "ruta_rapida": coords_rapida
     }
