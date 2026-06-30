@@ -1,0 +1,201 @@
+.welcome-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Centrado absoluto vertical */
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: #f0f0f0;
+}
+
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(4px);
+  z-index: 1;
+}
+
+.video-overlay-darken {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 2;
+}
+
+/* Tarjeta Central Rediseñada */
+.welcome-central-container {
+  position: relative;
+  width: 90%;
+  max-width: 680px; /* Reducido un poco para que se vea más compacto y estético */
+  background: rgba(22, 22, 33, 0.65);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  padding: 50px 40px;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Tipografías e Hitos */
+.tab-pane h1 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+  letter-spacing: -1px;
+}
+
+.tab-pane h2 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.tab-pane .subtitle {
+  display: block;
+  font-size: 1.1rem;
+  color: #3b82f6; /* Azul de tu botón */
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.tab-pane p {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.15rem;
+  line-height: 1.6;
+  margin-bottom: 35px;
+}
+
+.info-text {
+  max-width: 550px;
+  margin: 0 auto 25px auto !important;
+}
+
+/* Grupo de Botones uno abajo del otro */
+.welcome-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaciado entre botones */
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Estilos de botones */
+.btn-main {
+  width: 100%;
+  padding: 16px 30px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 14px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Colores Azules Coincidentes */
+.btn-blue {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-blue:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-blue-outline {
+  background: transparent;
+  color: #3b82f6;
+  border: 2px solid #3b82f6;
+}
+
+.btn-blue-outline:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* Botón Volver */
+.btn-back {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: color 0.2s;
+  letter-spacing: 1px;
+}
+
+.btn-back:hover {
+  color: #3b82f6;
+}
+
+/* Listas internas de información */
+.info-list, .creators-list {
+  text-align: left;
+  display: inline-block;
+  margin: 0 auto 20px auto;
+  padding: 0;
+  list-style: none;
+}
+
+.info-list li, .creators-list li {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.credits-box {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 20px 40px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.credits-box h3 {
+  margin-top: 0;
+  color: #3b82f6;
+}
+
+.university {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.4) !important;
+  margin: 10px 0 0 0 !important;
+}
+
+/* Animación de entrada fluida */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
