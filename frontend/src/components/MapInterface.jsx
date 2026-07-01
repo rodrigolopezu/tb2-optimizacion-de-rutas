@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Polyline, useMapEvents } from 'react-leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// Mantenemos la corrección de íconos de Leaflet aquí adentro
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Componente interno para capturar los clics
+
 function MapaClick({ setRuta, setMarcadores }) {
   const [puntos, setPuntos] = useState([]);
 
@@ -21,7 +21,7 @@ function MapaClick({ setRuta, setMarcadores }) {
       if (puntos.length === 2) {
         setPuntos([]);
         setMarcadores([]);
-        setRuta([]);
+        setRuta([]); 
         return;
       }
 
@@ -40,7 +40,7 @@ function MapaClick({ setRuta, setMarcadores }) {
         })
           .then(res => {
             const rutaFormateada = res.data.ruta.map(p => [p.lat, p.lon]);
-            setRuta(rutaFormateada);
+            setRuta(rutaFormateada); 
           })
           .catch(err => alert("No se pudo calcular la ruta: " + err));
       }
@@ -49,10 +49,47 @@ function MapaClick({ setRuta, setMarcadores }) {
   return null;
 }
 
-// Interfaz principal del mapa
+
 function MapInterface() {
-  const [ruta, setRuta] = useState([]);
+  const [ruta, setRuta] = useState([]); 
   const [marcadores, setMarcadores] = useState([]);
+  
+
+  const [puntosAProcesar, setPuntosAProcesar] = useState(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+
+    if (!ruta || ruta.length === 0) {
+      setPuntosAProcesar(0);
+      if (timerRef.current) clearInterval(timerRef.current);
+      return;
+    }
+
+
+    setPuntosAProcesar(1); 
+
+    if (timerRef.current) clearInterval(timerRef.current);
+
+
+    timerRef.current = setInterval(() => {
+      setPuntosAProcesar((prev) => {
+        if (prev < ruta.length) {
+          return prev + 1;
+        } else {
+          clearInterval(timerRef.current);
+          return prev;
+        }
+      });
+    }, 30); 
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [ruta]);
+
+  
+  const rutaDibujada = ruta.slice(0, puntosAProcesar);
 
   return (
     <div style={{ height: '100vh', width: '100%' }}>
@@ -63,7 +100,8 @@ function MapInterface() {
 
         {marcadores.map((p, i) => <Marker key={i} position={[p.lat, p.lon]} />)}
 
-        {ruta.length > 0 && <Polyline positions={ruta} color="blue" weight={5} />}
+        
+        {rutaDibujada.length > 1 && <Polyline positions={rutaDibujada} color="blue" weight={5} />}
       </MapContainer>
     </div>
   );
